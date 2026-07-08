@@ -161,7 +161,7 @@
 
     .time-input-wrapper {
       position: relative;
-      margin-bottom: 28px;
+      margin-bottom: 12px;
     }
     input[type="time"] {
       width: 100%;
@@ -186,6 +186,35 @@
     input[type="time"]::-webkit-calendar-picker-indicator {
       filter: invert(1) opacity(0.4);
       cursor: pointer;
+    }
+
+    /* "Now" quick action */
+    .now-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+      margin-top: -4px;
+    }
+    .now-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--star);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .now-btn:hover {
+      color: var(--moon);
+      border-color: rgba(91,124,250,0.4);
+      background: rgba(91,124,250,0.1);
     }
 
     /* Cycles */
@@ -438,7 +467,10 @@
     <div class="panel" id="panel-wakeup">
       <p class="label">Idem spať o</p>
       <div class="time-input-wrapper">
-        <input type="time" id="sleepTime" value="23:00">
+        <input type="time" id="sleepTime">
+      </div>
+      <div class="now-row">
+        <button type="button" class="now-btn" onclick="setSleepTimeToNow()">🕐 Nastaviť na teraz</button>
       </div>
       <div class="cycles-label">
         <span>Počet spánkových cyklov</span>
@@ -530,6 +562,23 @@
     mins = ((mins % 1440) + 1440) % 1440;
     return `${String(Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;
   }
+
+  // Returns the current local time as "HH:MM", for pre-filling the time input
+  function getCurrentTime() {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  }
+
+  // Pre-fills the "Idem spať o" field with the current time.
+  // Called on load and whenever the user taps the "Nastaviť na teraz" button.
+  function setSleepTimeToNow() {
+    document.getElementById('sleepTime').value = getCurrentTime();
+  }
+
+  // On first load, default the wake-up tab's input to "now" so the user
+  // can just hit calculate without touching the field — but they can still
+  // change it manually any time, and that change won't get overwritten.
+  setSleepTimeToNow();
 
   function calcBedtime() {
     const [h, m] = document.getElementById('wakeTime').value.split(':').map(Number);
